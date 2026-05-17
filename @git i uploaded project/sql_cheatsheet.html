@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #060a14;
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    padding: 32px;
+    width: 1200px;
+  }
+
+  .poster {
+    width: 1136px;
+    background: #0a0f1e;
+    border: 1.5px solid #1a2540;
+    border-radius: 22px;
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f1629 0%, #0a0f1e 100%);
+    border-bottom: 1.5px solid #1a2540;
+    padding: 30px 38px 26px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 18px; }
+  .logo-mark {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 700; color: #fff;
+    box-shadow: 0 0 28px rgba(245,158,11,0.4);
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-size: 27px; font-weight: 800; color: #f1f5f9;
+    letter-spacing: -0.5px; line-height: 1.1;
+  }
+  .header-text p { font-size: 13px; color: #64748b; margin-top: 4px; font-weight: 400; }
+  .header-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .htag { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.03em; }
+  .htag-sql  { background: #2a1400; color: #fb923c; border: 1px solid #ea580c44; }
+  .htag-win  { background: #1a2a0a; color: #86efac; border: 1px solid #16a34a44; }
+  .htag-cte  { background: #1a0e2e; color: #c4b5fd; border: 1px solid #7c3aed44; }
+  .htag-idx  { background: #0a1e2a; color: #7dd3fc; border: 1px solid #0284c744; }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: #1a2540;
+  }
+
+  .cell { background: #0a0f1e; padding: 0; }
+
+  .cell-header {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 15px;
+    border-bottom: 1px solid #1a2540;
+  }
+  .cell-num {
+    font-size: 10px; font-weight: 800;
+    width: 20px; height: 20px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+  }
+  .cell-title { font-size: 12.5px; font-weight: 700; color: #cbd5e1; flex: 1; }
+  .cell-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+  /* variants */
+  .v-orange .cell-header { background: #160c00; }
+  .v-orange .cell-num    { background: #3a2000; color: #fb923c; }
+  .v-orange .cell-badge  { background: #3a2000; color: #fb923c; }
+
+  .v-blue .cell-header   { background: #081425; }
+  .v-blue .cell-num      { background: #102040; color: #60a5fa; }
+  .v-blue .cell-badge    { background: #102040; color: #60a5fa; }
+
+  .v-green .cell-header  { background: #061408; }
+  .v-green .cell-num     { background: #0c2a10; color: #4ade80; }
+  .v-green .cell-badge   { background: #0c2a10; color: #4ade80; }
+
+  .v-purple .cell-header { background: #100820; }
+  .v-purple .cell-num    { background: #221040; color: #a78bfa; }
+  .v-purple .cell-badge  { background: #221040; color: #a78bfa; }
+
+  .v-teal .cell-header   { background: #051614; }
+  .v-teal .cell-num      { background: #092a26; color: #2dd4bf; }
+  .v-teal .cell-badge    { background: #092a26; color: #2dd4bf; }
+
+  .v-red .cell-header    { background: #180608; }
+  .v-red .cell-num       { background: #300c10; color: #fb7185; }
+  .v-red .cell-badge     { background: #300c10; color: #fb7185; }
+
+  .v-amber .cell-header  { background: #140c00; }
+  .v-amber .cell-num     { background: #2e1e00; color: #fbbf24; }
+  .v-amber .cell-badge   { background: #2e1e00; color: #fbbf24; }
+
+  .v-pink .cell-header   { background: #180810; }
+  .v-pink .cell-num      { background: #301020; color: #f472b6; }
+  .v-pink .cell-badge    { background: #301020; color: #f472b6; }
+
+  .v-sky .cell-header    { background: #06121e; }
+  .v-sky .cell-num       { background: #0c2030; color: #38bdf8; }
+  .v-sky .cell-badge     { background: #0c2030; color: #38bdf8; }
+
+  .dots { display: flex; gap: 5px; padding: 9px 15px 0; }
+  .dot  { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    line-height: 1.72;
+    padding: 9px 15px 14px;
+    color: #94a3b8;
+    white-space: pre;
+    overflow: hidden;
+  }
+
+  .kw  { color: #818cf8; font-weight: 700; }
+  .fn  { color: #38bdf8; }
+  .st  { color: #4ade80; }
+  .cm  { color: #3d5068; font-style: italic; }
+  .nm  { color: #fb923c; }
+  .cl  { color: #f472b6; }
+
+  .cell-wide { grid-column: span 2; }
+  .cell-full { grid-column: span 3; }
+
+  /* FOOTER */
+  .footer {
+    background: #060a14;
+    border-top: 1.5px solid #1a2540;
+    padding: 16px 38px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-stats { display: flex; align-items: center; gap: 20px; }
+  .fstat .num { font-size: 22px; font-weight: 800; color: #f1f5f9; font-family: 'JetBrains Mono', monospace; }
+  .fstat .lbl { font-size: 10px; color: #475569; font-weight: 500; margin-top: 1px; }
+  .fdiv { width: 1px; height: 34px; background: #1a2540; }
+  .footer-right { font-size: 11.5px; color: #334155; font-weight: 500; }
+  .footer-right span { color: #f59e0b; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">SQL</div>
+      <div class="header-text">
+        <h1>SQL Data Analysis &amp; Cleaning</h1>
+        <p>Complete cheatsheet for Data Analysts · 12 essential sections · Production-ready queries</p>
+      </div>
+    </div>
+    <div class="header-tags">
+      <span class="htag htag-sql">SQL / MySQL</span>
+      <span class="htag htag-win">Window Fns</span>
+      <span class="htag htag-cte">CTEs</span>
+      <span class="htag htag-idx">PostgreSQL</span>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- 01 SELECT -->
+    <div class="cell v-blue">
+      <div class="cell-header">
+        <div class="cell-num">01</div>
+        <span class="cell-title">SELECT &amp; Filter</span>
+        <span class="cell-badge">core</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> sales <span class="kw">LIMIT</span> <span class="nm">10</span>;
+<span class="kw">SELECT DISTINCT</span> city <span class="kw">FROM</span> customers;
+<span class="kw">SELECT</span> salary*<span class="nm">12</span> <span class="kw">AS</span> annual <span class="kw">FROM</span> emp;
+
+<span class="kw">WHERE</span> age <span class="kw">BETWEEN</span> <span class="nm">20</span> <span class="kw">AND</span> <span class="nm">40</span>
+<span class="kw">WHERE</span> city <span class="kw">IN</span> (<span class="st">'Delhi'</span>,<span class="st">'Mumbai'</span>)
+<span class="kw">WHERE</span> name <span class="kw">LIKE</span> <span class="st">'A%'</span>
+<span class="kw">WHERE</span> phone <span class="kw">IS NULL</span></pre>
+    </div>
+
+    <!-- 02 ORDER BY -->
+    <div class="cell v-teal">
+      <div class="cell-header">
+        <div class="cell-num">02</div>
+        <span class="cell-title">Sort &amp; Limit</span>
+        <span class="cell-badge">sort</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="kw">SELECT</span> name, salary
+<span class="kw">FROM</span>   employees
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>  <span class="nm">5</span>;
+
+<span class="kw">ORDER BY</span> dept <span class="kw">ASC</span>, salary <span class="kw">DESC</span>;
+
+<span class="cm">-- Pagination</span>
+<span class="kw">LIMIT</span> <span class="nm">10</span> <span class="kw">OFFSET</span> <span class="nm">20</span>;</pre>
+    </div>
+
+    <!-- 03 AGGREGATES -->
+    <div class="cell v-green">
+      <div class="cell-header">
+        <div class="cell-num">03</div>
+        <span class="cell-title">Aggregate Functions</span>
+        <span class="cell-badge">agg</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="fn">COUNT</span>(*),  <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> city)
+<span class="fn">SUM</span>(revenue),   <span class="fn">AVG</span>(salary)
+<span class="fn">MIN</span>(salary),    <span class="fn">MAX</span>(salary)
+
+<span class="kw">GROUP BY</span> dept
+<span class="kw">HAVING</span>   <span class="fn">AVG</span>(salary) > <span class="nm">60000</span>
+<span class="kw">ORDER BY</span> avg_pay <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <!-- 04 JOINS -->
+    <div class="cell v-purple">
+      <div class="cell-header">
+        <div class="cell-num">04</div>
+        <span class="cell-title">JOIN Types</span>
+        <span class="cell-badge">join</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="kw">FROM</span> orders o
+<span class="kw">INNER JOIN</span> customers c <span class="kw">ON</span> o.cid=c.id;
+
+<span class="kw">FROM</span> customers c
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> c.id=o.cid;
+
+<span class="kw">FROM</span> a <span class="kw">FULL OUTER JOIN</span> b <span class="kw">ON</span> a.id=b.id;
+
+<span class="kw">SELECT</span> city <span class="kw">FROM</span> a <span class="kw">UNION</span>
+<span class="kw">SELECT</span> city <span class="kw">FROM</span> b;</pre>
+    </div>
+
+    <!-- 05 WINDOW -->
+    <div class="cell v-amber">
+      <div class="cell-header">
+        <div class="cell-num">05</div>
+        <span class="cell-title">Window Functions</span>
+        <span class="cell-badge">window</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept
+               <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>)
+<span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> w
+<span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> w
+<span class="fn">NTILE</span>(<span class="nm">4</span>)     <span class="kw">OVER</span> w <span class="kw">AS</span> quartile
+<span class="fn">LAG</span>(revenue,<span class="nm">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> date)
+<span class="fn">LEAD</span>(revenue,<span class="nm">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> date)</pre>
+    </div>
+
+    <!-- 06 RUNNING TOTALS -->
+    <div class="cell v-sky">
+      <div class="cell-header">
+        <div class="cell-num">06</div>
+        <span class="cell-title">Running Total &amp; MoM</span>
+        <span class="cell-badge">window</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="fn">SUM</span>(revenue) <span class="kw">OVER</span> (
+  <span class="kw">ORDER BY</span> date
+  <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING</span>
+  <span class="kw">AND CURRENT ROW</span>)
+
+<span class="cm">-- Month-over-month growth</span>
+<span class="fn">ROUND</span>((<span class="fn">SUM</span>(amt) - <span class="fn">LAG</span>(<span class="fn">SUM</span>(amt))
+  <span class="kw">OVER</span>(<span class="kw">ORDER BY</span> mth))
+  / <span class="fn">LAG</span>(<span class="fn">SUM</span>(amt)) <span class="kw">OVER</span>(<span class="kw">ORDER BY</span> mth)*<span class="nm">100</span>,<span class="nm">2</span>)</pre>
+    </div>
+
+    <!-- 07 NULL -->
+    <div class="cell v-red">
+      <div class="cell-header">
+        <div class="cell-num">07</div>
+        <span class="cell-title">NULL Handling</span>
+        <span class="cell-badge">nulls</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="fn">COALESCE</span>(phone, email, <span class="st">'N/A'</span>)
+<span class="fn">IFNULL</span>(salary, <span class="nm">0</span>)
+<span class="fn">NULLIF</span>(revenue, <span class="nm">0</span>)
+
+<span class="cm">-- Safe division (avoid ÷0)</span>
+revenue / <span class="fn">NULLIF</span>(cost, <span class="nm">0</span>) <span class="kw">AS</span> ratio
+
+<span class="kw">WHERE</span> col <span class="kw">IS NOT NULL</span>
+<span class="kw">UPDATE</span> emp <span class="kw">SET</span> salary=<span class="nm">0</span>
+<span class="kw">WHERE</span> salary <span class="kw">IS NULL</span></pre>
+    </div>
+
+    <!-- 08 CASE WHEN -->
+    <div class="cell v-orange">
+      <div class="cell-header">
+        <div class="cell-num">08</div>
+        <span class="cell-title">CASE WHEN Logic</span>
+        <span class="cell-badge">logic</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="kw">CASE</span>
+  <span class="kw">WHEN</span> salary > <span class="nm">100000</span> <span class="kw">THEN</span> <span class="st">'high'</span>
+  <span class="kw">WHEN</span> salary > <span class="nm">50000</span>  <span class="kw">THEN</span> <span class="st">'mid'</span>
+  <span class="kw">ELSE</span> <span class="st">'low'</span>
+<span class="kw">END</span> <span class="kw">AS</span> salary_band
+
+<span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> status=<span class="st">'won'</span>
+      <span class="kw">THEN</span> <span class="nm">1</span> <span class="kw">END</span>) <span class="kw">AS</span> won_deals</pre>
+    </div>
+
+    <!-- 09 DATE STRING -->
+    <div class="cell v-teal">
+      <div class="cell-header">
+        <div class="cell-num">09</div>
+        <span class="cell-title">Date &amp; String Fns</span>
+        <span class="cell-badge">datetime</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="fn">NOW</span>(), <span class="fn">CURDATE</span>(), <span class="fn">YEAR</span>(d), <span class="fn">MONTH</span>(d)
+<span class="fn">DATE_FORMAT</span>(date,<span class="st">'%Y-%m'</span>)
+<span class="fn">DATEDIFF</span>(end_date, start_date)
+<span class="fn">DATE_ADD</span>(date, <span class="kw">INTERVAL</span> <span class="nm">7</span> <span class="kw">DAY</span>)
+<span class="fn">EXTRACT</span>(<span class="kw">QUARTER FROM</span> date)
+
+<span class="fn">UPPER</span>(n), <span class="fn">LOWER</span>(n), <span class="fn">TRIM</span>(n)
+<span class="fn">CONCAT</span>(first,<span class="st">' '</span>,last), <span class="fn">LENGTH</span>(n)
+<span class="fn">REPLACE</span>(col,<span class="st">'old'</span>,<span class="st">'new'</span>)</pre>
+    </div>
+
+    <!-- 10 SUBQUERY + CTE wide -->
+    <div class="cell v-purple cell-wide">
+      <div class="cell-header">
+        <div class="cell-num">10</div>
+        <span class="cell-title">Subqueries &amp; CTEs (WITH clause)</span>
+        <span class="cell-badge">subquery</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="cm">-- IN subquery                                      -- CTE chain</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> customers                            <span class="kw">WITH</span> dept_avg <span class="kw">AS</span> (
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (                                          <span class="kw">SELECT</span> dept, <span class="fn">AVG</span>(salary) avg_sal
+  <span class="kw">SELECT DISTINCT</span> customer_id                           <span class="kw">FROM</span> employees <span class="kw">GROUP BY</span> dept),
+  <span class="kw">FROM</span> orders                                      top_earners <span class="kw">AS</span> (
+  <span class="kw">WHERE</span> amount > <span class="nm">1000</span>);                                 <span class="kw">SELECT</span> e.* <span class="kw">FROM</span> employees e
+                                                        <span class="kw">JOIN</span> dept_avg d <span class="kw">USING</span>(dept)
+<span class="cm">-- Scalar subquery                                      WHERE</span> e.salary > d.avg_sal)
+<span class="kw">SELECT</span> name, salary -                               <span class="kw">SELECT</span> * <span class="kw">FROM</span> top_earners;
+  (<span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees) diff <span class="kw">FROM</span> employees;</pre>
+    </div>
+
+    <!-- 11 DATA CLEANING wide -->
+    <div class="cell v-red cell-wide">
+      <div class="cell-header">
+        <div class="cell-num">11</div>
+        <span class="cell-title">Data Cleaning — Find Dupes · Fix NULLs · Detect Outliers</span>
+        <span class="cell-badge">clean</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="cm">-- Count dupes                  -- IQR outliers                          -- Stddev outliers</span>
+<span class="kw">SELECT</span> email, <span class="fn">COUNT</span>(*) cnt     <span class="kw">WITH</span> stats <span class="kw">AS</span> (                         <span class="kw">WITH</span> s <span class="kw">AS</span> (
+<span class="kw">FROM</span>   users                     <span class="kw">SELECT</span>                                   <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) mu,
+<span class="kw">GROUP BY</span> email                     <span class="fn">PERCENTILE_CONT</span>(<span class="nm">0.25</span>) <span class="kw">WITHIN GROUP</span>            <span class="fn">STDDEV</span>(salary) sigma
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="nm">1</span>;               (<span class="kw">ORDER BY</span> salary) q1,              <span class="kw">FROM</span> employees)
+                                   <span class="fn">PERCENTILE_CONT</span>(<span class="nm">0.75</span>) <span class="kw">WITHIN GROUP</span>  <span class="kw">SELECT</span> e.*,
+<span class="cm">-- Delete dupes                    (ORDER BY salary) q3                  (e.salary-s.mu)/s.sigma z
+-- keep lowest id                FROM employees)                       FROM</span> employees e, s
+<span class="kw">DELETE FROM</span> users               <span class="kw">SELECT</span> * <span class="kw">FROM</span> employees, stats        <span class="kw">WHERE</span> <span class="fn">ABS</span>((e.salary-s.mu)
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (               <span class="kw">WHERE</span> salary < q1 - <span class="nm">1.5</span>*(q3-q1)        /s.sigma) > <span class="nm">3</span>;
+  <span class="kw">SELECT</span> <span class="fn">MIN</span>(id)                  <span class="kw">OR</span>  salary > q3 + <span class="nm">1.5</span>*(q3-q1);
+  <span class="kw">FROM</span> users <span class="kw">GROUP BY</span> email);</pre>
+    </div>
+
+    <!-- 12 EDA + SAVE RESULTS (full width) -->
+    <div class="cell v-green cell-full">
+      <div class="cell-header">
+        <div class="cell-num">12</div>
+        <span class="cell-title">EDA Queries &amp; Save Results</span>
+        <span class="cell-badge">eda · save</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+<span class="cm">-- Frequency + %                              -- Monthly trend                             -- Full analyst pipeline (CTE)</span>
+<span class="kw">SELECT</span> city,                                 <span class="kw">SELECT</span>                                       <span class="kw">WITH</span> clean <span class="kw">AS</span> (
+  <span class="fn">COUNT</span>(*) freq,                               <span class="fn">DATE_FORMAT</span>(order_date,<span class="st">'%Y-%m'</span>) mth,      <span class="kw">SELECT</span> id, <span class="fn">TRIM</span>(<span class="fn">LOWER</span>(email)) email,
+  <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(*)*<span class="nm">100.0</span> /                      <span class="fn">SUM</span>(amount) revenue,                         <span class="fn">COALESCE</span>(salary,<span class="nm">0</span>) salary,
+    <span class="fn">SUM</span>(<span class="fn">COUNT</span>(*)) <span class="kw">OVER</span>(),<span class="nm">2</span>) pct              <span class="fn">COUNT</span>(*) orders                              <span class="fn">CAST</span>(joined <span class="kw">AS</span> <span class="fn">DATE</span>) joined
+<span class="kw">FROM</span> customers                              <span class="kw">FROM</span>     orders                              <span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> city <span class="kw">ORDER BY</span> freq <span class="kw">DESC</span>;           <span class="kw">GROUP BY</span> <span class="nm">1</span> <span class="kw">ORDER BY</span> <span class="nm">1</span>;                     <span class="kw">WHERE</span> id <span class="kw">IS NOT NULL</span>),
+                                                                                          summary <span class="kw">AS</span> (
+<span class="cm">-- Histogram buckets                         -- Save as view                               SELECT</span> dept, <span class="fn">AVG</span>(salary) avg_sal
+<span class="kw">SELECT</span> <span class="fn">FLOOR</span>(salary/<span class="nm">10000</span>)*<span class="nm">10000</span> bucket,    <span class="kw">CREATE VIEW</span> vw_high_earners <span class="kw">AS</span>             <span class="kw">FROM</span> clean <span class="kw">GROUP BY</span> dept)
+  <span class="fn">COUNT</span>(*) cnt                               <span class="kw">SELECT</span> * <span class="kw">FROM</span> employees                   <span class="kw">SELECT</span> * <span class="kw">FROM</span> summary
+<span class="kw">FROM</span> employees                              <span class="kw">WHERE</span>  salary > <span class="nm">80000</span>;                    <span class="kw">ORDER BY</span> avg_sal <span class="kw">DESC</span>;
+<span class="kw">GROUP BY</span> <span class="nm">1</span> <span class="kw">ORDER BY</span> <span class="nm">1</span>;</pre>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-stats">
+      <div class="fstat"><div class="num">12</div><div class="lbl">Sections</div></div>
+      <div class="fdiv"></div>
+      <div class="fstat"><div class="num">50+</div><div class="lbl">SQL Functions</div></div>
+      <div class="fdiv"></div>
+      <div class="fstat" style="color:#4ade80"><div class="num" style="color:#4ade80;">MySQL</div><div class="lbl">+ PostgreSQL</div></div>
+      <div class="fdiv"></div>
+      <div class="fstat"><div class="num" style="color:#fb923c;">100%</div><div class="lbl">Production ready</div></div>
+    </div>
+    <div class="footer-right">Save this · Share with your network &nbsp;<span>#SQL #DataAnalytics #DataAnalyst</span></div>
+  </div>
+
+</div>
+</body>
+</html>

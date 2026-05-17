@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Data Analysis Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e1a;
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .poster {
+    width: 1080px;
+    background: #0d1120;
+    border: 1px solid #1e2a45;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Ambient glow blobs */
+  .poster::before {
+    content: '';
+    position: absolute;
+    top: -120px; left: -120px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .poster::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; right: -100px;
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(20,184,166,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: relative; z-index: 1;
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+    border-bottom: 1px solid #1e2a45;
+    padding: 32px 40px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 18px; }
+  .logo-mark {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px; font-weight: 700; color: #fff;
+    box-shadow: 0 0 24px rgba(99,102,241,0.45);
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-size: 26px; font-weight: 800; color: #f1f5f9;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .header-text p {
+    font-size: 13px; color: #64748b; margin-top: 3px;
+    font-weight: 400;
+  }
+  .header-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .htag {
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 20px; letter-spacing: 0.02em;
+  }
+  .htag-py  { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb44; }
+  .htag-pd  { background: #1a3a2a; color: #34d399; border: 1px solid #10b98144; }
+  .htag-sk  { background: #2e1f4a; color: #a78bfa; border: 1px solid #7c3aed44; }
+  .htag-np  { background: #3a2010; color: #fb923c; border: 1px solid #ea580c44; }
+
+  /* ── GRID ── */
+  .grid {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: #1e2a45;
+    border-top: 0px;
+  }
+
+  .cell {
+    background: #0d1120;
+    padding: 0;
+    transition: background 0.2s;
+  }
+  .cell:hover { background: #111827; }
+
+  .cell-header {
+    display: flex; align-items: center; gap: 9px;
+    padding: 11px 16px 10px;
+    border-bottom: 1px solid #1e2a45;
+  }
+  .cell-num {
+    font-size: 10px; font-weight: 700;
+    width: 18px; height: 18px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cell-title { font-size: 12px; font-weight: 600; color: #cbd5e1; flex: 1; }
+  .cell-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  /* color variants */
+  .v-blue  .cell-header { background: #0c1a2e; }
+  .v-blue  .cell-num    { background: #1e3a5f; color: #60a5fa; }
+  .v-blue  .cell-badge  { background: #1e3a5f; color: #60a5fa; }
+
+  .v-teal  .cell-header { background: #091f1a; }
+  .v-teal  .cell-num    { background: #0f3028; color: #2dd4bf; }
+  .v-teal  .cell-badge  { background: #0f3028; color: #2dd4bf; }
+
+  .v-amber .cell-header { background: #1a1200; }
+  .v-amber .cell-num    { background: #3a2a00; color: #fbbf24; }
+  .v-amber .cell-badge  { background: #3a2a00; color: #fbbf24; }
+
+  .v-purple .cell-header { background: #150d2e; }
+  .v-purple .cell-num   { background: #2e1f4a; color: #a78bfa; }
+  .v-purple .cell-badge { background: #2e1f4a; color: #a78bfa; }
+
+  .v-coral .cell-header { background: #1e0e08; }
+  .v-coral .cell-num    { background: #3a1a0a; color: #fb7185; }
+  .v-coral .cell-badge  { background: #3a1a0a; color: #fb7185; }
+
+  .v-green .cell-header { background: #091a0c; }
+  .v-green .cell-num    { background: #0e2e14; color: #4ade80; }
+  .v-green .cell-badge  { background: #0e2e14; color: #4ade80; }
+
+  .v-pink .cell-header  { background: #1e0a18; }
+  .v-pink .cell-num     { background: #3a1030; color: #f472b6; }
+  .v-pink .cell-badge   { background: #3a1030; color: #f472b6; }
+
+  .v-orange .cell-header { background: #1e1008; }
+  .v-orange .cell-num   { background: #3a1e08; color: #fb923c; }
+  .v-orange .cell-badge { background: #3a1e08; color: #fb923c; }
+
+  .v-sky .cell-header   { background: #081822; }
+  .v-sky .cell-num      { background: #0c2a3a; color: #38bdf8; }
+  .v-sky .cell-badge    { background: #0c2a3a; color: #38bdf8; }
+
+  /* Code area */
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    line-height: 1.68;
+    padding: 10px 16px 12px;
+    color: #94a3b8;
+    overflow: hidden;
+    white-space: pre;
+  }
+  .kw  { color: #818cf8; font-weight: 600; }
+  .fn  { color: #38bdf8; }
+  .st  { color: #4ade80; }
+  .cm  { color: #475569; font-style: italic; }
+  .nm  { color: #fb923c; }
+  .cl  { color: #f472b6; }
+  .op  { color: #fbbf24; }
+
+  /* Dot-row (terminal dots) */
+  .dots { display: flex; gap: 5px; padding: 10px 16px 0; }
+  .dot  { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: relative; z-index: 1;
+    background: #080c18;
+    border-top: 1px solid #1e2a45;
+    padding: 16px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-left { display: flex; align-items: center; gap: 20px; }
+  .footer-stat { text-align: center; }
+  .footer-stat .num { font-size: 20px; font-weight: 800; color: #f1f5f9; }
+  .footer-stat .lbl { font-size: 10px; color: #475569; font-weight: 500; margin-top: 1px; }
+  .divider { width: 1px; height: 32px; background: #1e2a45; }
+  .footer-right { font-size: 12px; color: #334155; font-weight: 500; }
+  .footer-right span { color: #6366f1; font-weight: 700; }
+
+  /* Wide cell spanning 2 cols */
+  .cell-wide { grid-column: span 2; }
+
+  /* Pipeline cell styling */
+  .pipeline-row { display: flex; align-items: center; gap: 0; flex-wrap: wrap; padding: 10px 16px; }
+  .p-step {
+    display: flex; align-items: center; gap: 6px;
+    background: #111827; border: 1px solid #1e2a45;
+    border-radius: 8px; padding: 6px 10px;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    color: #94a3b8; white-space: nowrap;
+  }
+  .p-step .dot-s { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .p-arrow { color: #334155; font-size: 14px; padding: 0 6px; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">Py</div>
+      <div class="header-text">
+        <h1>Python Data Analysis &amp; Cleaning</h1>
+        <p>Complete cheatsheet for Data Analysts · 11 essential sections · Production-ready code</p>
+      </div>
+    </div>
+    <div class="header-tags">
+      <span class="htag htag-py">Python 3.x</span>
+      <span class="htag htag-pd">pandas</span>
+      <span class="htag htag-sk">sklearn</span>
+      <span class="htag htag-np">numpy</span>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- 1. Load & Inspect -->
+    <div class="cell v-blue">
+      <div class="cell-header">
+        <div class="cell-num">01</div>
+        <span class="cell-title">Load &amp; Inspect</span>
+        <span class="cell-badge">pandas</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df = pd.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>)
+df = pd.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>,
+    parse_dates=[<span class="st">'date'</span>])
+
+df.<span class="fn">head</span>()     <span class="cm"># first 5 rows</span>
+df.<span class="fn">shape</span>      <span class="cm"># (rows, cols)</span>
+df.<span class="fn">info</span>()     <span class="cm"># dtypes + nulls</span>
+df.<span class="fn">describe</span>() <span class="cm"># stats summary</span></pre>
+    </div>
+
+    <!-- 2. Missing Values -->
+    <div class="cell v-amber">
+      <div class="cell-header">
+        <div class="cell-num">02</div>
+        <span class="cell-title">Missing Values</span>
+        <span class="cell-badge">missing</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df.<span class="fn">isnull</span>().<span class="fn">sum</span>()
+df.<span class="fn">isnull</span>().<span class="fn">mean</span>() * <span class="nm">100</span>
+
+df.<span class="fn">dropna</span>()
+df.<span class="fn">dropna</span>(axis=<span class="nm">1</span>)
+df.<span class="fn">fillna</span>(<span class="nm">0</span>)
+df[<span class="st">'col'</span>].<span class="fn">fillna</span>(df[<span class="st">'col'</span>].<span class="fn">mean</span>())
+df[<span class="st">'col'</span>].<span class="fn">fillna</span>(method=<span class="st">'ffill'</span>)</pre>
+    </div>
+
+    <!-- 3. Duplicates -->
+    <div class="cell v-coral">
+      <div class="cell-header">
+        <div class="cell-num">03</div>
+        <span class="cell-title">Duplicates &amp; Strings</span>
+        <span class="cell-badge">clean</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df.<span class="fn">duplicated</span>().<span class="fn">sum</span>()
+df.<span class="fn">drop_duplicates</span>(inplace=<span class="kw">True</span>)
+df.<span class="fn">drop_duplicates</span>(
+    subset=[<span class="st">'col1'</span>,<span class="st">'col2'</span>])
+
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">strip</span>()
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">lower</span>()
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">replace</span>(<span class="st">'old'</span>,<span class="st">'new'</span>)</pre>
+    </div>
+
+    <!-- 4. Data Types -->
+    <div class="cell v-purple">
+      <div class="cell-header">
+        <div class="cell-num">04</div>
+        <span class="cell-title">Data Types</span>
+        <span class="cell-badge">dtypes</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(<span class="fn">int</span>)
+df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(<span class="fn">float</span>)
+
+df[<span class="st">'date'</span>] = pd.<span class="fn">to_datetime</span>(
+    df[<span class="st">'date'</span>], format=<span class="st">'%Y-%m-%d'</span>)
+
+pd.<span class="fn">to_numeric</span>(df[<span class="st">'col'</span>],
+    errors=<span class="st">'coerce'</span>)
+pd.<span class="fn">get_dummies</span>(df, columns=[<span class="st">'cat'</span>])</pre>
+    </div>
+
+    <!-- 5. Filter & Sort -->
+    <div class="cell v-teal">
+      <div class="cell-header">
+        <div class="cell-num">05</div>
+        <span class="cell-title">Filter &amp; Sort</span>
+        <span class="cell-badge">select</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df[df[<span class="st">'age'</span>] > <span class="nm">30</span>]
+df[(df[<span class="st">'age'</span>] > <span class="nm">30</span>) &
+   (df[<span class="st">'salary'</span>] > <span class="nm">50000</span>)]
+df[df[<span class="st">'city'</span>].<span class="fn">isin</span>([<span class="st">'Delhi'</span>,<span class="st">'Mumbai'</span>])]
+df.<span class="fn">query</span>(<span class="st">'age > 30 & salary > 50000'</span>)
+
+df.<span class="fn">sort_values</span>(<span class="st">'col'</span>, ascending=<span class="kw">False</span>)
+df.<span class="fn">sort_values</span>([<span class="st">'col1'</span>,<span class="st">'col2'</span>])</pre>
+    </div>
+
+    <!-- 6. GroupBy -->
+    <div class="cell v-green">
+      <div class="cell-header">
+        <div class="cell-num">06</div>
+        <span class="cell-title">GroupBy &amp; Pivot</span>
+        <span class="cell-badge">aggregate</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df.<span class="fn">groupby</span>(<span class="st">'col'</span>).<span class="fn">mean</span>()
+df.<span class="fn">groupby</span>(<span class="st">'col'</span>).<span class="fn">agg</span>({
+    <span class="st">'sales'</span>: [<span class="st">'sum'</span>,<span class="st">'mean'</span>],
+    <span class="st">'qty'</span>  : <span class="st">'count'</span>})
+
+pd.<span class="fn">pivot_table</span>(df,
+    values=<span class="st">'sales'</span>, index=[<span class="st">'region'</span>],
+    columns=[<span class="st">'product'</span>], aggfunc=<span class="st">'sum'</span>)</pre>
+    </div>
+
+    <!-- 7. Feature Engineering -->
+    <div class="cell v-sky">
+      <div class="cell-header">
+        <div class="cell-num">07</div>
+        <span class="cell-title">Feature Engineering</span>
+        <span class="cell-badge">engineer</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df[<span class="st">'profit'</span>] = df[<span class="st">'revenue'</span>] - df[<span class="st">'cost'</span>]
+df[<span class="st">'label'</span>] = df[<span class="st">'score'</span>].<span class="fn">apply</span>(
+    <span class="kw">lambda</span> x: <span class="st">'high'</span> <span class="kw">if</span> x > <span class="nm">80</span> <span class="kw">else</span> <span class="st">'low'</span>)
+df[<span class="st">'band'</span>] = pd.<span class="fn">cut</span>(df[<span class="st">'age'</span>],
+    bins=[<span class="nm">0</span>,<span class="nm">18</span>,<span class="nm">35</span>,<span class="nm">60</span>,<span class="nm">100</span>],
+    labels=[<span class="st">'teen'</span>,<span class="st">'young'</span>,<span class="st">'mid'</span>,<span class="st">'senior'</span>])
+df[<span class="st">'col_norm'</span>] = <span class="cl">MinMaxScaler</span>().<span class="fn">fit_transform</span>(
+    df[[<span class="st">'col'</span>]])</pre>
+    </div>
+
+    <!-- 8. Outliers -->
+    <div class="cell v-coral">
+      <div class="cell-header">
+        <div class="cell-num">08</div>
+        <span class="cell-title">Outlier Detection</span>
+        <span class="cell-badge">outliers</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+Q1 = df[<span class="st">'col'</span>].<span class="fn">quantile</span>(<span class="nm">0.25</span>)
+Q3 = df[<span class="st">'col'</span>].<span class="fn">quantile</span>(<span class="nm">0.75</span>)
+IQR = Q3 - Q1
+outliers = df[
+    (df[<span class="st">'col'</span>] < Q1 - <span class="nm">1.5</span>*IQR) |
+    (df[<span class="st">'col'</span>] > Q3 + <span class="nm">1.5</span>*IQR)]
+z = np.<span class="fn">abs</span>(stats.<span class="fn">zscore</span>(df[<span class="st">'col'</span>]))
+df_clean = df[z < <span class="nm">3</span>]</pre>
+    </div>
+
+    <!-- 9. EDA Viz -->
+    <div class="cell v-purple">
+      <div class="cell-header">
+        <div class="cell-num">09</div>
+        <span class="cell-title">EDA Visualisation</span>
+        <span class="cell-badge">viz</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+sns.<span class="fn">histplot</span>(df[<span class="st">'col'</span>], kde=<span class="kw">True</span>)
+sns.<span class="fn">boxplot</span>(x=<span class="st">'cat'</span>, y=<span class="st">'val'</span>, data=df)
+sns.<span class="fn">heatmap</span>(df.<span class="fn">corr</span>(),
+    annot=<span class="kw">True</span>, fmt=<span class="st">'.2f'</span>,
+    cmap=<span class="st">'coolwarm'</span>)
+sns.<span class="fn">pairplot</span>(df, hue=<span class="st">'category'</span>)
+plt.<span class="fn">show</span>()</pre>
+    </div>
+
+    <!-- 10. Merge (wide) -->
+    <div class="cell v-teal cell-wide">
+      <div class="cell-header">
+        <div class="cell-num">10</div>
+        <span class="cell-title">Merge, Concat &amp; Reshape</span>
+        <span class="cell-badge">reshape</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="st">'key'</span>, how=<span class="st">'inner'</span>)   pd.<span class="fn">merge</span>(df1, df2, on=<span class="st">'key'</span>, how=<span class="st">'left'</span>)
+pd.<span class="fn">concat</span>([df1, df2], ignore_index=<span class="kw">True</span>)    df.<span class="fn">melt</span>(id_vars=[<span class="st">'id'</span>], value_vars=[<span class="st">'q1'</span>,<span class="st">'q2'</span>], var_name=<span class="st">'qtr'</span>, value_name=<span class="st">'sales'</span>)
+df.<span class="fn">pivot</span>(index=<span class="st">'id'</span>, columns=<span class="st">'quarter'</span>, values=<span class="st">'sales'</span>)</pre>
+    </div>
+
+    <!-- 11. Export -->
+    <div class="cell v-green">
+      <div class="cell-header">
+        <div class="cell-num">11</div>
+        <span class="cell-title">Export Results</span>
+        <span class="cell-badge">export</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df.<span class="fn">to_csv</span>(<span class="st">'clean.csv'</span>, index=<span class="kw">False</span>)
+df.<span class="fn">to_excel</span>(<span class="st">'clean.xlsx'</span>,
+    index=<span class="kw">False</span>, sheet_name=<span class="st">'Sheet1'</span>)
+df.<span class="fn">to_json</span>(<span class="st">'clean.json'</span>,
+    orient=<span class="st">'records'</span>, indent=<span class="nm">2</span>)</pre>
+    </div>
+
+    <!-- Pipeline (wide) -->
+    <div class="cell v-blue cell-wide">
+      <div class="cell-header">
+        <div class="cell-num" style="background:#1e3a5f;color:#60a5fa;">⚡</div>
+        <span class="cell-title">Clean Pipeline — One-liner pattern</span>
+        <span class="cell-badge">pipeline</span>
+      </div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <pre>
+df = (pd.<span class="fn">read_csv</span>(<span class="st">'raw.csv'</span>)
+  .<span class="fn">drop_duplicates</span>()
+  .<span class="fn">dropna</span>(subset=[<span class="st">'key_col'</span>])
+  .<span class="fn">assign</span>(col=<span class="kw">lambda</span> x: x[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">strip</span>().<span class="fn">str</span>.<span class="fn">lower</span>())
+  .<span class="fn">sort_values</span>(<span class="st">'date'</span>)
+  .<span class="fn">reset_index</span>(drop=<span class="kw">True</span>))</pre>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <div class="footer-stat"><div class="num">11</div><div class="lbl">Sections</div></div>
+      <div class="divider"></div>
+      <div class="footer-stat"><div class="num">40+</div><div class="lbl">Functions</div></div>
+      <div class="divider"></div>
+      <div class="footer-stat"><div class="num" style="color:#4ade80;">100%</div><div class="lbl">Production ready</div></div>
+    </div>
+    <div class="footer-right">Save · Share · Follow for more &nbsp;<span>#DataAnalytics #Python #pandas</span></div>
+  </div>
+
+</div>
+</body>
+</html>

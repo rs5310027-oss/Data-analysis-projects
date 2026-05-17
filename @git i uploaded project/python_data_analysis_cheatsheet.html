@@ -1,0 +1,369 @@
+
+<style>
+  .root { padding: 1rem 0; font-family: var(--font-mono); }
+  .section-label { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin: 1.5rem 0 0.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .card-header { padding: 8px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .card-header i { font-size: 15px; }
+  .card-title { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .badge { font-family: var(--font-sans); font-size: 11px; padding: 2px 7px; border-radius: 20px; margin-left: auto; }
+  .b-blue { background: #E6F1FB; color: #0C447C; }
+  .b-teal { background: #E1F5EE; color: #085041; }
+  .b-amber { background: #FAEEDA; color: #633806; }
+  .b-purple { background: #EEEDFE; color: #3C3489; }
+  .b-coral { background: #FAECE7; color: #712B13; }
+  .b-green { background: #EAF3DE; color: #27500A; }
+  .code-block { padding: 10px 14px; font-size: 12px; line-height: 1.65; color: var(--color-text-primary); white-space: pre; overflow-x: auto; }
+  .kw { color: #534AB7; font-weight: 500; }
+  .fn { color: #185FA5; }
+  .st { color: #3B6D11; }
+  .cm { color: var(--color-text-secondary); font-style: italic; }
+  .nm { color: #993C1D; }
+  .hdr-blue { background: #E6F1FB; }
+  .hdr-teal { background: #E1F5EE; }
+  .hdr-amber { background: #FAEEDA; }
+  .hdr-purple { background: #EEEDFE; }
+  .hdr-coral { background: #FAECE7; }
+  .hdr-green { background: #EAF3DE; }
+  @media (prefers-color-scheme: dark) {
+    .b-blue { background: #0C447C; color: #B5D4F4; }
+    .b-teal { background: #085041; color: #9FE1CB; }
+    .b-amber { background: #633806; color: #FAC775; }
+    .b-purple { background: #3C3489; color: #CECBF6; }
+    .b-coral { background: #712B13; color: #F5C4B3; }
+    .b-green { background: #27500A; color: #C0DD97; }
+    .hdr-blue { background: #042C53; }
+    .hdr-teal { background: #04342C; }
+    .hdr-amber { background: #412402; }
+    .hdr-purple { background: #26215C; }
+    .hdr-coral { background: #4A1B0C; }
+    .hdr-green { background: #173404; }
+  }
+</style>
+<div class="root">
+  <h2 class="sr-only">Python Data Analysis & Cleaning — Function Reference</h2>
+
+  <div class="section-label"><i class="ti ti-upload" aria-hidden="true"></i> &nbsp;1. Load &amp; inspect</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-blue"><i class="ti ti-file-type-csv" style="color:#185FA5"></i><span class="card-title">Read CSV</span><span class="badge b-blue">pandas</span></div>
+      <div class="code-block"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>)
+df = pd.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>,
+    parse_dates=[<span class="st">'date_col'</span>],
+    index_col=<span class="st">'id'</span>)</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-blue"><i class="ti ti-eye" style="color:#185FA5"></i><span class="card-title">First look</span><span class="badge b-blue">inspect</span></div>
+      <div class="code-block">df.<span class="fn">head</span>()          <span class="cm"># first 5 rows</span>
+df.<span class="fn">tail</span>(<span class="nm">10</span>)       <span class="cm"># last 10 rows</span>
+df.<span class="fn">shape</span>          <span class="cm"># (rows, cols)</span>
+df.<span class="fn">info</span>()          <span class="cm"># dtypes + nulls</span>
+df.<span class="fn">describe</span>()      <span class="cm"># stats summary</span>
+df.<span class="fn">columns</span>.<span class="fn">tolist</span>() <span class="cm"># column names</span></div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-alert-triangle" aria-hidden="true"></i> &nbsp;2. Missing values</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-amber"><i class="ti ti-zoom-question" style="color:#854F0B"></i><span class="card-title">Detect nulls</span><span class="badge b-amber">missing</span></div>
+      <div class="code-block">df.<span class="fn">isnull</span>().<span class="fn">sum</span>()       <span class="cm"># count per col</span>
+df.<span class="fn">isnull</span>().<span class="fn">mean</span>() * <span class="nm">100</span> <span class="cm"># % missing</span>
+
+<span class="cm"># Heatmap of nulls</span>
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+sns.<span class="fn">heatmap</span>(df.<span class="fn">isnull</span>(),
+    cbar=<span class="kw">False</span>, yticklabels=<span class="kw">False</span>)</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-amber"><i class="ti ti-eraser" style="color:#854F0B"></i><span class="card-title">Handle nulls</span><span class="badge b-amber">missing</span></div>
+      <div class="code-block">df.<span class="fn">dropna</span>()                <span class="cm"># drop rows</span>
+df.<span class="fn">dropna</span>(axis=<span class="nm">1</span>)           <span class="cm"># drop cols</span>
+df.<span class="fn">fillna</span>(<span class="nm">0</span>)                <span class="cm"># fill with 0</span>
+df[<span class="st">'col'</span>].<span class="fn">fillna</span>(
+    df[<span class="st">'col'</span>].<span class="fn">mean</span>())       <span class="cm"># fill mean</span>
+df[<span class="st">'col'</span>].<span class="fn">fillna</span>(
+    method=<span class="st">'ffill'</span>)        <span class="cm"># forward fill</span></div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-copy" aria-hidden="true"></i> &nbsp;3. Duplicates</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-coral"><i class="ti ti-copy" style="color:#993C1D"></i><span class="card-title">Find &amp; remove duplicates</span><span class="badge b-coral">clean</span></div>
+      <div class="code-block">df.<span class="fn">duplicated</span>().<span class="fn">sum</span>()    <span class="cm"># count dupes</span>
+df[df.<span class="fn">duplicated</span>()]       <span class="cm"># view dupes</span>
+
+df.<span class="fn">drop_duplicates</span>(
+    inplace=<span class="kw">True</span>)         <span class="cm"># remove all</span>
+
+df.<span class="fn">drop_duplicates</span>(
+    subset=[<span class="st">'col1'</span>,<span class="st">'col2'</span>],
+    keep=<span class="st">'first'</span>)          <span class="cm"># subset</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-coral"><i class="ti ti-text-size" style="color:#993C1D"></i><span class="card-title">String cleaning</span><span class="badge b-coral">clean</span></div>
+      <div class="code-block">df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">strip</span>()        <span class="cm"># trim spaces</span>
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">lower</span>()        <span class="cm"># lowercase</span>
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">upper</span>()        <span class="cm"># uppercase</span>
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">replace</span>(
+    <span class="st">'old'</span>, <span class="st">'new'</span>)           <span class="cm"># replace</span>
+df[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">contains</span>(
+    <span class="st">'pattern'</span>)             <span class="cm"># filter</span></div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-settings-2" aria-hidden="true"></i> &nbsp;4. Data types</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-purple"><i class="ti ti-transform" style="color:#534AB7"></i><span class="card-title">Type conversion</span><span class="badge b-purple">dtypes</span></div>
+      <div class="code-block">df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(<span class="fn">int</span>)
+df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(<span class="fn">float</span>)
+df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(<span class="fn">str</span>)
+
+<span class="cm"># Date conversion</span>
+df[<span class="st">'date'</span>] = pd.<span class="fn">to_datetime</span>(
+    df[<span class="st">'date'</span>], format=<span class="st">'%Y-%m-%d'</span>)
+
+<span class="cm"># Numeric (ignore errors)</span>
+pd.<span class="fn">to_numeric</span>(df[<span class="st">'col'</span>],
+    errors=<span class="st">'coerce'</span>)</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-purple"><i class="ti ti-category" style="color:#534AB7"></i><span class="card-title">Categorical &amp; dummies</span><span class="badge b-purple">dtypes</span></div>
+      <div class="code-block">df[<span class="st">'col'</span>] = df[<span class="st">'col'</span>].<span class="fn">astype</span>(
+    <span class="st">'category'</span>)
+
+<span class="cm"># Value counts</span>
+df[<span class="st">'col'</span>].<span class="fn">value_counts</span>()
+df[<span class="st">'col'</span>].<span class="fn">value_counts</span>(
+    normalize=<span class="kw">True</span>)       <span class="cm"># proportions</span>
+
+<span class="cm"># One-hot encode</span>
+pd.<span class="fn">get_dummies</span>(df,
+    columns=[<span class="st">'col'</span>])</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-filter" aria-hidden="true"></i> &nbsp;5. Filter, select &amp; sort</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-teal"><i class="ti ti-filter" style="color:#0F6E56"></i><span class="card-title">Filter rows</span><span class="badge b-teal">select</span></div>
+      <div class="code-block">df[df[<span class="st">'age'</span>] > <span class="nm">30</span>]
+df[df[<span class="st">'city'</span>] == <span class="st">'Delhi'</span>]
+
+<span class="cm"># Multiple conditions</span>
+df[(df[<span class="st">'age'</span>] > <span class="nm">30</span>) &
+   (df[<span class="st">'salary'</span>] > <span class="nm">50000</span>)]
+
+<span class="cm"># isin filter</span>
+df[df[<span class="st">'city'</span>].<span class="fn">isin</span>(
+    [<span class="st">'Delhi'</span>, <span class="st">'Mumbai'</span>])]
+
+df.<span class="fn">query</span>(<span class="st">'age > 30 & salary > 50000'</span>)</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-teal"><i class="ti ti-sort-ascending" style="color:#0F6E56"></i><span class="card-title">Sort &amp; rank</span><span class="badge b-teal">select</span></div>
+      <div class="code-block">df.<span class="fn">sort_values</span>(<span class="st">'col'</span>)
+df.<span class="fn">sort_values</span>(<span class="st">'col'</span>,
+    ascending=<span class="kw">False</span>)
+
+<span class="cm"># Multi-column sort</span>
+df.<span class="fn">sort_values</span>(
+    [<span class="st">'col1'</span>, <span class="st">'col2'</span>],
+    ascending=[<span class="kw">True</span>, <span class="kw">False</span>])
+
+<span class="cm"># Rank</span>
+df[<span class="st">'rank'</span>] = df[<span class="st">'col'</span>].<span class="fn">rank</span>(
+    method=<span class="st">'dense'</span>)</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-chart-bar" aria-hidden="true"></i> &nbsp;6. Aggregation &amp; groupby</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-green"><i class="ti ti-sum" style="color:#3B6D11"></i><span class="card-title">GroupBy</span><span class="badge b-green">aggregate</span></div>
+      <div class="code-block">df.<span class="fn">groupby</span>(<span class="st">'col'</span>).<span class="fn">mean</span>()
+df.<span class="fn">groupby</span>(<span class="st">'col'</span>).<span class="fn">agg</span>({
+    <span class="st">'sales'</span>: [<span class="st">'sum'</span>,<span class="st">'mean'</span>],
+    <span class="st">'qty'</span>  : <span class="st">'count'</span>
+})
+
+<span class="cm"># Multiple group keys</span>
+df.<span class="fn">groupby</span>(
+    [<span class="st">'region'</span>, <span class="st">'product'</span>]
+)[<span class="st">'revenue'</span>].<span class="fn">sum</span>()</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-green"><i class="ti ti-table" style="color:#3B6D11"></i><span class="card-title">Pivot table</span><span class="badge b-green">aggregate</span></div>
+      <div class="code-block">pd.<span class="fn">pivot_table</span>(df,
+    values =<span class="st">'sales'</span>,
+    index  =[<span class="st">'region'</span>],
+    columns=[<span class="st">'product'</span>],
+    aggfunc=<span class="st">'sum'</span>,
+    fill_value=<span class="nm">0</span>)
+
+<span class="cm"># Cross-tab (counts)</span>
+pd.<span class="fn">crosstab</span>(
+    df[<span class="st">'region'</span>], df[<span class="st">'product'</span>])</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-sparkles" aria-hidden="true"></i> &nbsp;7. Feature engineering</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-blue"><i class="ti ti-math-function" style="color:#185FA5"></i><span class="card-title">New columns</span><span class="badge b-blue">engineer</span></div>
+      <div class="code-block"><span class="cm"># Arithmetic</span>
+df[<span class="st">'profit'</span>] = (
+    df[<span class="st">'revenue'</span>] - df[<span class="st">'cost'</span>])
+
+<span class="cm"># Apply custom function</span>
+df[<span class="st">'label'</span>] = df[<span class="st">'score'</span>].<span class="fn">apply</span>(
+    <span class="kw">lambda</span> x: <span class="st">'high'</span> <span class="kw">if</span> x > <span class="nm">80</span>
+               <span class="kw">else</span> <span class="st">'low'</span>)
+
+<span class="cm"># Bin / cut</span>
+df[<span class="st">'band'</span>] = pd.<span class="fn">cut</span>(df[<span class="st">'age'</span>],
+    bins=[<span class="nm">0</span>,<span class="nm">18</span>,<span class="nm">35</span>,<span class="nm">60</span>,<span class="nm">100</span>],
+    labels=[<span class="st">'teen'</span>,<span class="st">'young'</span>,<span class="st">'mid'</span>,<span class="st">'senior'</span>])</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-blue"><i class="ti ti-arrows-minimize" style="color:#185FA5"></i><span class="card-title">Scaling &amp; normalise</span><span class="badge b-blue">engineer</span></div>
+      <div class="code-block"><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> (
+    MinMaxScaler, StandardScaler)
+
+scaler = <span class="fn">MinMaxScaler</span>()
+df[<span class="st">'col_norm'</span>] = scaler.<span class="fn">fit_transform</span>(
+    df[[<span class="st">'col'</span>]])
+
+scaler2 = <span class="fn">StandardScaler</span>()
+df[<span class="st">'col_std'</span>] = scaler2.<span class="fn">fit_transform</span>(
+    df[[<span class="st">'col'</span>]])</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-chart-dots" aria-hidden="true"></i> &nbsp;8. Outlier detection</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-coral"><i class="ti ti-ripple" style="color:#993C1D"></i><span class="card-title">IQR method</span><span class="badge b-coral">outliers</span></div>
+      <div class="code-block">Q1 = df[<span class="st">'col'</span>].<span class="fn">quantile</span>(<span class="nm">0.25</span>)
+Q3 = df[<span class="st">'col'</span>].<span class="fn">quantile</span>(<span class="nm">0.75</span>)
+IQR = Q3 - Q1
+
+lower = Q1 - <span class="nm">1.5</span> * IQR
+upper = Q3 + <span class="nm">1.5</span> * IQR
+
+outliers = df[
+    (df[<span class="st">'col'</span>] < lower) |
+    (df[<span class="st">'col'</span>] > upper)]</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-coral"><i class="ti ti-wave-sine" style="color:#993C1D"></i><span class="card-title">Z-score method</span><span class="badge b-coral">outliers</span></div>
+      <div class="code-block"><span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+z = np.<span class="fn">abs</span>(stats.<span class="fn">zscore</span>(
+    df[<span class="st">'col'</span>]))
+
+<span class="cm"># Rows where z-score > 3</span>
+df_clean = df[z < <span class="nm">3</span>]
+
+<span class="cm"># Add z-score column</span>
+df[<span class="st">'zscore'</span>] = z</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-chart-line" aria-hidden="true"></i> &nbsp;9. EDA visualisation</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-purple"><i class="ti ti-chart-histogram" style="color:#534AB7"></i><span class="card-title">Distribution plots</span><span class="badge b-purple">viz</span></div>
+      <div class="code-block"><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+
+sns.<span class="fn">histplot</span>(df[<span class="st">'col'</span>], kde=<span class="kw">True</span>)
+sns.<span class="fn">boxplot</span>(x=<span class="st">'cat'</span>, y=<span class="st">'val'</span>, data=df)
+sns.<span class="fn">violinplot</span>(x=<span class="st">'cat'</span>, y=<span class="st">'val'</span>,
+    data=df)
+plt.<span class="fn">show</span>()</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-purple"><i class="ti ti-chart-scatter" style="color:#534AB7"></i><span class="card-title">Correlation &amp; pairplot</span><span class="badge b-purple">viz</span></div>
+      <div class="code-block">df.<span class="fn">corr</span>()                    <span class="cm"># matrix</span>
+
+sns.<span class="fn">heatmap</span>(df.<span class="fn">corr</span>(),
+    annot=<span class="kw">True</span>,
+    fmt=<span class="st">'.2f'</span>,
+    cmap=<span class="st">'coolwarm'</span>)
+
+sns.<span class="fn">pairplot</span>(df,
+    hue=<span class="st">'category_col'</span>)
+plt.<span class="fn">show</span>()</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-link" aria-hidden="true"></i> &nbsp;10. Merge &amp; reshape</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-teal"><i class="ti ti-table-plus" style="color:#0F6E56"></i><span class="card-title">Merge / join</span><span class="badge b-teal">reshape</span></div>
+      <div class="code-block">pd.<span class="fn">merge</span>(df1, df2,
+    on=<span class="st">'key'</span>,
+    how=<span class="st">'inner'</span>)  <span class="cm"># inner join</span>
+
+pd.<span class="fn">merge</span>(df1, df2,
+    on=<span class="st">'key'</span>,
+    how=<span class="st">'left'</span>)   <span class="cm"># left join</span>
+
+pd.<span class="fn">concat</span>(
+    [df1, df2],
+    ignore_index=<span class="kw">True</span>)   <span class="cm"># stack rows</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-teal"><i class="ti ti-arrows-exchange" style="color:#0F6E56"></i><span class="card-title">Melt &amp; pivot</span><span class="badge b-teal">reshape</span></div>
+      <div class="code-block"><span class="cm"># Wide → long</span>
+df.<span class="fn">melt</span>(
+    id_vars=[<span class="st">'id'</span>],
+    value_vars=[<span class="st">'q1'</span>,<span class="st">'q2'</span>,<span class="st">'q3'</span>],
+    var_name=<span class="st">'quarter'</span>,
+    value_name=<span class="st">'sales'</span>)
+
+<span class="cm"># Long → wide</span>
+df.<span class="fn">pivot</span>(
+    index=<span class="st">'id'</span>,
+    columns=<span class="st">'quarter'</span>,
+    values=<span class="st">'sales'</span>)</div>
+    </div>
+  </div>
+
+  <div class="section-label"><i class="ti ti-device-floppy" aria-hidden="true"></i> &nbsp;11. Export</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header hdr-green"><i class="ti ti-download" style="color:#3B6D11"></i><span class="card-title">Save cleaned data</span><span class="badge b-green">export</span></div>
+      <div class="code-block">df.<span class="fn">to_csv</span>(<span class="st">'clean.csv'</span>,
+    index=<span class="kw">False</span>)
+
+df.<span class="fn">to_excel</span>(<span class="st">'clean.xlsx'</span>,
+    index=<span class="kw">False</span>,
+    sheet_name=<span class="st">'Sheet1'</span>)
+
+df.<span class="fn">to_json</span>(<span class="st">'clean.json'</span>,
+    orient=<span class="st">'records'</span>,
+    indent=<span class="nm">2</span>)</div>
+    </div>
+    <div class="card">
+      <div class="card-header hdr-green"><i class="ti ti-report-analytics" style="color:#3B6D11"></i><span class="card-title">Quick pipeline</span><span class="badge b-green">export</span></div>
+      <div class="code-block">df = (pd.<span class="fn">read_csv</span>(<span class="st">'raw.csv'</span>)
+  .<span class="fn">drop_duplicates</span>()
+  .<span class="fn">dropna</span>(subset=[<span class="st">'key_col'</span>])
+  .<span class="fn">assign</span>(
+    col=<span class="kw">lambda</span> x:
+        x[<span class="st">'col'</span>].<span class="fn">str</span>.<span class="fn">strip</span>().<span class="fn">str</span>.<span class="fn">lower</span>()
+  )
+  .<span class="fn">sort_values</span>(<span class="st">'date'</span>)
+  .<span class="fn">reset_index</span>(drop=<span class="kw">True</span>)
+)</div>
+    </div>
+  </div>
+</div>
